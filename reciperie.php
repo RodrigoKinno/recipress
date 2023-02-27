@@ -8,6 +8,23 @@ Description: Gerador de Post Type para Loops de páginas de Aterrissagem
 */
 
 function create_reciperie_post_type() {
+
+    // Cria a taxonomia
+    register_taxonomy(
+        'recipepress_recipecategory', // Nome da taxonomia
+        'recipe', // Nome da post type associada
+        array(
+            'labels' => array(
+                'name' => __('Recipe Categories'),
+                'singular_name' => __('Recipe Category')
+            ),
+            'public' => true,
+            'show_in_rest' => true, // Permite que a taxonomia seja usada no editor de blocos Gutenberg
+            'hierarchical' => true // Permite que a taxonomia tenha subcategorias
+        )
+    );
+
+    // Registra a post type
     register_post_type( 'recipe',
         array(
             'labels' => array(
@@ -17,7 +34,7 @@ function create_reciperie_post_type() {
             'public' => true,
             'has_archive' => true,
             'supports' => array( 'title' ),
-           // 'menu_icon' => plugin_dir_url(__FILE__) . 'icon.jpeg', 
+            'taxonomies' => array( 'recipepress_recipecategory' ),
             
         )
     );
@@ -28,6 +45,8 @@ function create_reciperie_post_type() {
     // Adicione o código para o esquema de receitas do schema.org abaixo.
     add_action( 'wp_head', 'add_recipe_schema' );
 }
+
+
 
 function add_recipe_schema() {
     if ( ! is_singular( 'recipe' ) ) {
@@ -55,7 +74,7 @@ function add_recipe_schema() {
         'recipeIngredient' => $ingredientes,
         'recipeInstructions' => get_field( 'metodo_de_preparo', $post_id ),
         'totalTime' => get_field( 'recipepress_prepTime', $post_id ),
-        'recipeCategory' => get_field( 'categoria', $post_id ),
+        'recipeCategory' => get_field( 'recipepress_recipe_category', $post_id ),
         'prepTime' => get_field( 'recipepress_totalTime', $post_id ),
         'cookTime' => get_field( 'recipepress_cookTime', $post_id ),
         'recipeDifficulty' => get_field( 'dificuldade', $post_id ),
